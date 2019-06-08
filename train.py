@@ -117,7 +117,7 @@ y_train = np.array(pd.get_dummies(train_data[b'labels']))
 x_test = test_data[b'data'] / 255
 # 将测试输出标签变成one_hot形式并将list转成numpy向量
 y_test = np.array(pd.get_dummies(test_data[b'labels']))
-# 训练
+# 训练 10000
 for i in range(10000):
     # 100条数据为1个batch，轮流训练
     start = i * BATCH_SIZE % 50000
@@ -140,9 +140,9 @@ print("test accuracy %g" % test_accuracy)
 graph_def = tf.get_default_graph().as_graph_def()
 # 将上面的变量转化成常量，保存模型为pb模型时需要,注意这里的final_result和前面的y_con2是同名，只有这样才会保存它，否则会报错，
 # 如果需要保存其他tensor只需要让tensor的名字和这里保持一直即可
-output_graph_def = tf.graph_util.convert_variables_to_constants(sess=sess, input_graph_def=graph_def, output_node_names=['final_result'])
+output_graph_def = tf.graph_util.convert_variables_to_constants(sess=sess, input_graph_def=graph_def, output_node_names=['y'])
 # 保存前面训练后的模型为pb文件
-with tf.gfile.GFile("grf.pb", 'wb') as f:
+with tf.gfile.GFile("model.pb", 'wb') as f:
     f.write(output_graph_def.SerializeToString())
 
 # 保存模型
