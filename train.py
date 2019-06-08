@@ -92,7 +92,8 @@ h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 # 第二层全连接
 W_fc2 = weight_variable([FC_SIZE, NUM_LABLES])
 b_fc2 = bias_variable([NUM_LABLES])
-y = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
+# 输出y
+y = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2, name="y")
 
 w1_loss = lamda * tf.nn.l2_loss(W_fc1)  # 对W_fc1使用L2正则化
 w2_loss = lamda * tf.nn.l2_loss(W_fc2)  # 对W_fc2使用L2正则化
@@ -107,7 +108,7 @@ correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))  # tf.cast将数据转换成指定类型
 # 开始训练
 # tf.global_variables_initializer().run()
-sess.run(tf.initialize_all_variables())
+sess.run(tf.global_variables_initializer())
 # 对数据范围为0-255的训练数据做归一化处理使其范围为0-1，并将list转成numpy向量
 x_train = np.array(train_data[b'data']) / 255
 # 将训练输出标签变成one_hot形式并将list转成numpy向量
@@ -117,7 +118,7 @@ x_test = test_data[b'data'] / 255
 # 将测试输出标签变成one_hot形式并将list转成numpy向量
 y_test = np.array(pd.get_dummies(test_data[b'labels']))
 # 训练
-for i in range(1000):
+for i in range(10000):
     # 100条数据为1个batch，轮流训练
     start = i * BATCH_SIZE % 50000
     train_step.run(feed_dict={x: x_train[start: start + BATCH_SIZE],
@@ -135,3 +136,15 @@ for i in range(1000):
 # 测试
 test_accuracy = accuracy.eval(feed_dict = {x: x_test, y_: y_test, keep_prob: 1.0})
 print("test accuracy %g" % test_accuracy)
+# 将当前图设置为默认图
+graph_def = tf.get_default_graph().as_graph_def()
+# 将上面的变量转化成常量，保存模型为pb模型时需要,注意这里的final_result和前面的y_con2是同名，只有这样才会保存它，否则会报错，
+# 如果需要保存其他tensor只需要让tensor的名字和这里保持一直即可
+output_graph_def = tf.graph_util.convert_variables_to_constants(sess=sess, input_graph_def=graph_def, output_node_names=['final_result'])
+# 保存前面训练后的模型为pb文件
+with tf.gfile.GFile("grf.pb", 'wb') as f:
+    f.write(output_graph_def.SerializeToString())
+
+# 保存模型
+saver = tf.train.Saver()
+saver.save(sess, "model_data/model")

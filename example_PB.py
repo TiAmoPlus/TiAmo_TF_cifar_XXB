@@ -5,14 +5,14 @@ from tensorflow.examples.tutorials.mnist import input_data
 # 导入其他库
 import tensorflow as tf
 # 获取MINIST数据
-mnist = input_data.read_data_sets(".", one_hot = True)
+mnist = input_data.read_data_sets(".", one_hot=True)
 # 创建会话
 sess = tf.InteractiveSession()
 # 占位符
 x = tf.placeholder("float", shape=[None, 784], name="Mul")
 y_ = tf.placeholder("float", shape=[None, 10],  name="y_")
 # 变量
-W = tf.Variable(tf.zeros([784,10]), name='x')
+W = tf.Variable(tf.zeros([784, 10]), name='x')
 b = tf.Variable(tf.zeros([10]), 'y_')
 
 
