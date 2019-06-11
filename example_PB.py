@@ -82,13 +82,11 @@ tf.add_to_collection('res', y_conv)
 tf.add_to_collection('output', y_conv2)
 # tf.add_to_collection('result', res)
 tf.add_to_collection('x', x)
-
 # 训练开始
 for i in range(20000):
-  batch = mnist.train.next_batch(50)
-  if i%100 == 0:
-    train_accuracy = accuracy.eval(feed_dict={
-        x:batch[0], y_: batch[1], keep_prob: 1.0})
+    batch = mnist.train.next_batch(50)
+    if i % 100 == 0:
+        train_accuracy = accuracy.eval(feed_dict={x: batch[0], y_: batch[1], keep_prob: 1.0})
     print("step %d, training accuracy %g"%(i, train_accuracy))
 # run()可以看做输入相关值给到函数中的占位符，然后计算的出结果，这里将batch[0]，给xbatch[1]给y_
 train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
@@ -103,7 +101,7 @@ output_graph_def = tf.graph_util.convert_variables_to_constants(sess,
 with tf.gfile.GFile("grf.pb", 'wb') as f:
         f.write(output_graph_def.SerializeToString())
 
-#保存模型
+# 保存模型
 saver = tf.train.Saver()
 saver.save(sess, "model_data/model")
 print("test accracy %g"%accuracy.eval(feed_dict={
