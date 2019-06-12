@@ -40,7 +40,7 @@ def max_pool_2x2(x):
 # 3072个数字表示图片特征，前1024个表示红色通道，中间1024表示绿色通道，最后1024表示蓝色通道
 # train[b'labels']为长度为10000的list，每一个list数字对应以上上3072维的一个特征
 train_data = {b'data': [], b'labels': []} #两个items都是list形式
-file_path = "cifar-10/cifar-10-batches-py/"
+file_path = "cifar-10\\cifar-10-batches-py\\"
 # 加载训练数据
 for i in range(5):
     with open(file_path + "data_batch_" +str(i + 1), mode='rb') as file:
@@ -90,7 +90,7 @@ b_fc1 = bias_variable([FC_SIZE])
 h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
 # 对隐藏层使用dropout
 keep_prob = tf.placeholder(tf.float32)
-h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+# h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
 # 第二层全连接
 W_fc2 = weight_variable([FC_SIZE, NUM_LABLES])
@@ -149,6 +149,6 @@ graph_def = tf.get_default_graph().as_graph_def()
 # 如果需要保存其他tensor只需要让tensor的名字和这里保持一直即可
 output_graph_def = tf.graph_util.convert_variables_to_constants(sess,graph_def, ['final_result'])
 # 保存前面训练后的模型为pb文件
-with tf.gfile.GFile("model.pb", 'wb') as f:
+with tf.gfile.GFile("cifar-10\\pb\\cifar10.pb", 'wb') as f:
     f.write(output_graph_def.SerializeToString())
 print("保存pb成功")
