@@ -88,9 +88,9 @@ merged = tf.summary.merge_all()
 train_writer = tf.summary.FileWriter('mnist/logs', sess.graph)
 
 # 训练开始
-for i in range(50000):
+for i in range(101):
     batch = mnist.train.next_batch(50)
-    if i%100 == 0:
+    if i % 100 == 0:
         train_accuracy = accuracy.eval(feed_dict={x: batch[0], y_true: batch[1]})
         print("step {0}, training accuracy {1}".format(i, train_accuracy))
     # run()可以看做输入相关值给到函数中的占位符，然后计算的出结果，这里将batch[0]，给xbatch[1]给y_
@@ -102,12 +102,12 @@ graph_def = tf.get_default_graph().as_graph_def()
 # 如果需要保存其他tensor只需要让tensor的名字和这里保持一直即可
 output_graph_def = tf.graph_util.convert_variables_to_constants(sess, graph_def, ['final_result'])
 # 保存前面训练后的模型为pb文件
-with tf.gfile.GFile("MNIST/pb/mnist.pb", 'wb') as f:
+with tf.gfile.GFile("mnist/model/pb/mnist.pb", 'wb') as f:
     f.write(output_graph_def.SerializeToString())
 print("保存pb成功")
 
 # 保存模型
 saver = tf.train.Saver()   
-saver.save(sess, "MNIST/ckpt/mnist.ckpt")
+saver.save(sess, "mnist/model/ckpt/mnist.ckpt")
 print("保存ckpt成功")
 
